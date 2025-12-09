@@ -1,0 +1,10 @@
+---
+- name: Connection check
+  hosts: lab_servers
+  tasks:
+    - name: Ping hosts
+      ansible.builtin.ping:
+
+    - name: Print msg
+      ansible.builtin.debug:
+        msg: Hello world

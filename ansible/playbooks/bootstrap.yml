@@ -1,0 +1,9 @@
+---
+- name: Prepare lab servers 
+  hosts: lab_servers
+  become: true
+  
+  roles:
+    - role: common # Base utilities (git, curl, htop)
+    - role: security # Hardening (SSH, UFW, Fail2Ban)
+    - role: docker # Container runtime environment

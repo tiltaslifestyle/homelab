@@ -1,0 +1,3 @@
+---
+# Initial system setup 
+- import_playbook: playbooks/bootstrap.yml
