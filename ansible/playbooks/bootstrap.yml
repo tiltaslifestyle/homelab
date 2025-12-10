@@ -5,5 +5,5 @@
   
   roles:
     - role: common # Base utilities (git, curl, htop)
-    - role: security # Hardening (SSH, UFW, Fail2Ban)
+    - role: security # Hardening (SSH, UFW, TODO: Fail2Ban)
     - role: docker # Container runtime environment
