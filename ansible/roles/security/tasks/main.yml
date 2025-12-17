@@ -38,3 +38,6 @@
   ufw:
     state: enabled
     policy: deny
+
+  
+# TODO: add gitignore AND updade readme.md with project structure graph

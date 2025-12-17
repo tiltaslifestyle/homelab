@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# Ansible
+*.retry
+ansible.log
+.fact_cache/
+.cache/
+
+# Kubernetes / k3s (local only)
+.kube/
+kubeconfig
+kubeconfig-*
+
+# Editor
+.vscode/
+.idea/
+*~
+*.swp
+
+# Secrets
+*.vault
