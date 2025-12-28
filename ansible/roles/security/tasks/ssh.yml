@@ -1,0 +1,17 @@
+---
+- name: Set authorized SSH keys for the ansible user
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ lookup('file', ansible_ssh_public_key) }}"
+
+- name: Deploy hardened SSH configuration
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/sshd -t -f %s 
+  notify: Restart SSH
+  

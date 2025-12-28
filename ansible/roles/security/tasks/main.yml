@@ -1,45 +1,9 @@
 ---
-- name: Set authorized SSH keys for the ansible user
-  authorized_key:
-    user: "{{ ansible_user }}"
-    state: present
-    key: "{{ lookup('file', ansible_ssh_public_key) }}"
+- name: Configure SSH
+  import_tasks: ssh.yml
 
-- name: Deploy hardened SSH configuration
-  template:
-    src: sshd_config.j2
-    dest: /etc/ssh/sshd_config
-    owner: root
-    group: root
-    mode: '0644'
-    validate: /usr/sbin/sshd -t -f %s 
-  notify: Restart SSH
-  
-- name: UFW - Allow SSH
-  ufw:
-    rule: allow
-    name: OpenSSH
+- name: Configure Firewall
+  import_tasks: firewall.yml
 
-- name: UFW - Allow Kubernetes API
-  ufw:
-    rule: allow
-    port: '6443'
-    proto: tcp
-    comment: 'K3s API Server'
-
-- name: UFW - Allow Traefik Ingress (HTTP/HTTPS)
-  ufw:
-    rule: allow
-    port: '80,443'
-    proto: tcp
-    comment: 'Web Traffic'
-
-- name: UFW - Enable firewall
-  ufw:
-    state: enabled
-    policy: deny
-
-- name: Install Fail2Ban
-  apt:
-    name: fail2ban
-    state: present
+- name: Configure Fail2Ban
+  import_tasks: fail2ban.yml

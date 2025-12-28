@@ -1,0 +1,24 @@
+---
+- name: UFW - Allow SSH
+  ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: UFW - Allow Kubernetes API
+  ufw:
+    rule: allow
+    port: '6443'
+    proto: tcp
+    comment: 'K3s API Server'
+
+- name: UFW - Allow Traefik Ingress (HTTP/HTTPS)
+  ufw:
+    rule: allow
+    port: '80,443'
+    proto: tcp
+    comment: 'Web Traffic'
+
+- name: UFW - Enable firewall
+  ufw:
+    state: enabled
+    policy: deny
