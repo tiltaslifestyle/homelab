@@ -1,0 +1,14 @@
+[DEFAULT]
+# Whitelist Localhost + Home Network
+ignoreip = 127.0.0.1/8 ::1 192.168.100.0/24
+
+bantime = 1h
+findtime = 10m
+maxretry = 5
+banaction = iptables-multiport
+
+[sshd]
+enabled = true
+port    = ssh
+logpath = /var/log/auth.log
+maxretry = 3

@@ -3,3 +3,12 @@
   apt:
     name: fail2ban
     state: present
+
+- name: Deploy Fail2Ban configuration
+  template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Fail2Ban 
