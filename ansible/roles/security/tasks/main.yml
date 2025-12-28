@@ -39,5 +39,7 @@
     state: enabled
     policy: deny
 
-  
-# TODO: add gitignore AND updade readme.md with project structure graph
+- name: Install Fail2Ban
+  apt:
+    name: fail2ban
+    state: present
