@@ -1,0 +1,13 @@
+api:
+  source: "AbuseIPDB"
+  key: "{{ abuseipdb_api_key }}"
+
+ntfy:
+  topic: "{{ ntfy_topic }}"
+
+thresholds:
+  critical_score: {{ incident_critical_score }}
+
+logging:
+  level: "INFO"
+  path: "automated-incident-response.log"

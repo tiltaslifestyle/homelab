@@ -6,8 +6,6 @@
   roles:
     - role: common # Base utilities (git, curl, htop)
     - role: security # Hardening (SSH, UFW, Fail2Ban)
-
-    # - role: incident-response # Tool for analyzing security incidents
-
+    - role: incident_response # Tool for analyzing security incidents
     - role: docker # Container runtime environment
     - role: k3s # Lightweight Kubernetes
