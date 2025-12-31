@@ -7,11 +7,6 @@ ansible.log
 .fact_cache/
 .cache/
 
-# Kubernetes / k3s (local only)
-.kube/
-kubeconfig
-kubeconfig-*
-
 # Editor
 .vscode/
 .idea/
@@ -20,3 +15,15 @@ kubeconfig-*
 
 # Secrets
 *.vault
+*.pem
+*.key
+id_rsa
+
+# Python
+__pycache__/
+*.pyc
+
+# Kubernetes / k3s (local only)
+.kube/
+kubeconfig
+kubeconfig-*

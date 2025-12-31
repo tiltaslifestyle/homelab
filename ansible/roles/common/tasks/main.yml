@@ -1,4 +1,8 @@
 ---
+- name: Set time zone to UTC
+  timezone:
+    name: Etc/UTC
+
 - name: Update apt cache
   apt:
     update_cache: yes
@@ -21,3 +25,13 @@
       - python3-venv
     state: present
 
+- name: Install Chrony
+  apt:
+    name: chrony
+    state: present
+
+- name: Ensure Chrony is started and enabled
+  service:
+    name: chrony
+    state: started
+    enabled: yes
