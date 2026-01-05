@@ -1,3 +1,4 @@
 ---
-# Initial system setup 
-- import_playbook: playbooks/bootstrap.yml
+# Initial system setup
+- name: Deploy Infrastructure
+  import_playbook: playbooks/bootstrap.yml

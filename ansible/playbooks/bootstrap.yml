@@ -1,11 +1,11 @@
 ---
-- name: Prepare lab servers 
+- name: Prepare lab servers
   hosts: lab_servers
   become: true
-  
+
   roles:
-    - role: common # Base utilities (git, curl, htop)
-    - role: security # Hardening (SSH, UFW, Fail2Ban)
-    - role: incident_response # Tool for analyzing security incidents
-    - role: docker # Container runtime environment
-    - role: k3s # Lightweight Kubernetes
+    - role: common            # Base utilities
+    - role: security          # Hardening
+    - role: incident_response # Tools
+    - role: docker            # Container runtime
+    - role: k3s               # Kubernetes

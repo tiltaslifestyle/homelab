@@ -1,11 +1,11 @@
 ---
 - name: Update apt cache
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
     cache_valid_time: 3600
 
 - name: Install dependencies for Docker
-  apt:
+  ansible.builtin.apt:
     name:
       - ca-certificates
       - curl
@@ -14,29 +14,29 @@
     state: present
 
 - name: Create directory for Docker apt key
-  file: 
+  ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
     mode: '0755'
 
 - name: Download Docker GPG key
-  get_url:
+  ansible.builtin.get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /etc/apt/keyrings/docker.asc
     mode: '0644'
 
 - name: Add Docker apt repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
     state: present
     filename: docker
 
 - name: Update apt cache after adding Docker repo
-  apt:
-    update_cache: yes
+  ansible.builtin.apt:
+    update_cache: true
 
 - name: Install Docker packages
-  apt:  
+  ansible.builtin.apt:
     name:
       - docker-ce
       - docker-ce-cli
@@ -46,13 +46,13 @@
     state: present
 
 - name: Ensure Docker service is started and enabled
-  service:
+  ansible.builtin.service:
     name: docker
     state: started
-    enabled: yes  
+    enabled: true
 
 - name: Add user to docker group
-  user:   
+  ansible.builtin.user:
     name: "{{ ansible_user }}"
     groups: docker
-    append: yes 
+    append: true

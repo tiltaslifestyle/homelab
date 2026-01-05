@@ -1,50 +1,52 @@
 ---
 - name: Check if K3s is already installed
-  stat:
+  ansible.builtin.stat:
     path: /usr/local/bin/k3s
   register: k3s_binary
 
-- name: Install K3s 
-  shell: |
+- name: Install K3s
+  ansible.builtin.shell: |
+    set -o pipefail
     curl -sfL https://get.k3s.io | sh -
   args:
     creates: /var/lib/rancher/k3s/server/node-token
+    executable: /bin/bash
   when: not k3s_binary.stat.exists
 
 - name: Ensure K3s service is running and enabled
-  service:
+  ansible.builtin.service:
     name: k3s
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Wait for kubeconfig file generation
-  wait_for:
+  ansible.builtin.wait_for:
     path: /etc/rancher/k3s/k3s.yaml
     state: present
     timeout: 30
 
 # Prepare local directory to store the cluster credentials
 - name: Create local .kube directory
-  file:
+  ansible.builtin.file:
     path: ~/.kube
     state: directory
     mode: '0750'
-  delegate_to: localhost # Execute on the Control Node
-  become: no
+  delegate_to: localhost
+  become: false
 
 # Fetch file from remote Server to the Control Node
 - name: Fetch kubeconfig to local machine
-  fetch:
+  ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml
     dest: ~/.kube/config
-    flat: yes
+    flat: true
   become: true
 
 # Update config Control Node to point to the remote Server IP
 - name: Replace localhost IP with Server IP in local config
-  replace:
+  ansible.builtin.replace:
     path: ~/.kube/config
     regexp: '127.0.0.1'
     replace: "{{ inventory_hostname }}"
-  delegate_to: localhost # Execute on the Control Node
-  become: no
+  delegate_to: localhost
+  become: false

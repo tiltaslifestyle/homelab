@@ -1,9 +1,12 @@
 ---
 - name: Configure SSH
-  import_tasks: ssh.yml
+  ansible.builtin.import_tasks:
+    file: ssh.yml
 
 - name: Configure Firewall
-  import_tasks: firewall.yml
+  ansible.builtin.import_tasks:
+    file: firewall.yml
 
 - name: Configure Fail2Ban
-  import_tasks: fail2ban.yml
+  ansible.builtin.import_tasks:
+    file: fail2ban.yml
