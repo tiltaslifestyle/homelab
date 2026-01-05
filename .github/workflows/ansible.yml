@@ -37,6 +37,8 @@ jobs:
         uses: ansible/ansible-lint@v6
         with:
           args: "ansible/"
+        env:
+          ANSIBLE_CONFIG: ansible/ansible.cfg
 
   vulnerability-scan:
     name: Trivy Config Scan
