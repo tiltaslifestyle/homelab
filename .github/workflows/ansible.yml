@@ -33,6 +33,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Install Ansible Collections
+        run: |
+          ansible-galaxy collection install -r ansible/requirements.yml
+
       - name: Run Ansible Lint
         uses: ansible/ansible-lint@v6
         with:
