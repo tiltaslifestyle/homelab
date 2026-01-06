@@ -1,0 +1,26 @@
+---
+- name: Install dependencies for Helm
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gpg
+    state: present
+    update_cache: true
+
+- name: Download Helm GPG signing key
+  ansible.builtin.get_url:
+    url: https://packages.buildkite.com/helm-linux/helm-debian/gpgkey
+    dest: /usr/share/keyrings/helm-signing.asc
+    mode: '0644'
+
+- name: Add Helm apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/helm-signing.asc] https://packages.buildkite.com/helm-linux/helm-debian/any/ any main"
+    state: present
+    filename: helm-stable-debian
+
+- name: Install Helm CLI
+  ansible.builtin.apt:
+    name: helm
+    update_cache: true
+    state: present

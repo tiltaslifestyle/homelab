@@ -9,3 +9,5 @@
     - role: incident_response # Tools
     - role: docker            # Container runtime
     - role: k3s               # Kubernetes
+    - role: helm              # Package manager
+#   - role: agrocd            # GitOps
