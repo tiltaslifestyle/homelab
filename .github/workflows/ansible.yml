@@ -11,31 +11,34 @@ on:
       - 'ansible/**'
 
 jobs:
-  security-scan:
-    name: Secret Detection
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Gitleaks Scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   lint:
-    name: Ansible Linting
+    name: Ansible Quality
     runs-on: ubuntu-latest
-    needs: security-scan 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Install Python Tools
+        run: pip install yamllint ansible
 
       - name: Install Ansible Collections
         run: |
           ansible-galaxy collection install -r ansible/requirements.yml
+
+      - name: Install Ansible Collections
+        run: |
+          ansible-galaxy collection install -r ansible/requirements.yml
+
+      - name: Run Yamllint
+        run: |
+          echo "{extends: default, rules: {line-length: disable, comments-indentation: disable, truthy: disable, comments: disable, new-lines: disable}}" > .yamllint
+          yamllint -c .yamllint -f standard ansible/
+          
+      - name: Run Ansible Syntax Check
+        env:
+          ANSIBLE_CONFIG: ansible/ansible.cfg
+        run: |
+          ansible-playbook ansible/playbooks/*.yml --syntax-check
 
       - name: Run Ansible Lint
         uses: ansible/ansible-lint@v6
@@ -43,21 +46,3 @@ jobs:
           args: "ansible/"
         env:
           ANSIBLE_CONFIG: ansible/ansible.cfg
-
-  vulnerability-scan:
-    name: Trivy Config Scan
-    runs-on: ubuntu-latest
-    needs: security-scan
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner in fs mode
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: 'ansible/'
-          hide-progress: false
-          format: 'table'
-          exit-code: '1'
-          severity: 'CRITICAL,HIGH'

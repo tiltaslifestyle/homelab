@@ -1,0 +1,1 @@
+{extends: default, rules: {line-length: disable, comments-indentation: disable, truthy: disable, comments: disable, new-lines: disable}}
