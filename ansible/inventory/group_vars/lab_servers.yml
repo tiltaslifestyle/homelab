@@ -23,4 +23,4 @@ abuseipdb_api_key: !vault |
           39323265303838343065633138613364313037643631643635316161643365386631313164306233
           6332
 
-ntfy_topic: air-github # Topic for ntfy notifications
+ntfy_topic: air-github

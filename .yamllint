@@ -1,1 +1,14 @@
-{extends: default, rules: {line-length: disable, comments-indentation: disable, truthy: disable, comments: disable, new-lines: disable}}
+extends: default
+
+ignore: |
+  **/templates/**
+  **/charts/**/templates/**
+  **/vendor/**
+  **/generated/**
+
+rules:
+  line-length: disable
+  comments-indentation: disable
+  truthy: disable
+  new-lines: disable
+  comments: disable

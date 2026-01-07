@@ -30,10 +30,8 @@ jobs:
           ansible-galaxy collection install -r ansible/requirements.yml
 
       - name: Run Yamllint
-        run: |
-          echo "{extends: default, rules: {line-length: disable, comments-indentation: disable, truthy: disable, comments: disable, new-lines: disable}}" > .yamllint
-          yamllint -c .yamllint -f standard ansible/
-          
+        run: yamllint -c .yamllint -f standard ansible/
+
       - name: Run Ansible Syntax Check
         env:
           ANSIBLE_CONFIG: ansible/ansible.cfg
