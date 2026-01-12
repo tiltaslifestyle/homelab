@@ -27,3 +27,4 @@ __pycache__/
 .kube/
 kubeconfig
 kubeconfig-*
+k8s/repo-secret.yml
