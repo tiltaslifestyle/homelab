@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: adguard-home
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.gabe565.com
+    chart: adguard-home
+    targetRevision: 0.3.25
+    helm:
+      releaseName: adguard-home
+      values: |
+        replicaCount: 1
+        service:
+          main:
+            ports:
+              http:
+                port: 80
+        persistence:
+          config:
+            enabled: true
+            accessMode: ReadWriteOnce
+            size: 1Gi
+          data:
+            enabled: true
+            accessMode: ReadWriteOnce
+            size: 5Gi
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: adguard-home
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
