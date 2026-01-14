@@ -17,9 +17,26 @@ spec:
         replicaCount: 1
         service:
           main:
+            type: LoadBalancer
             ports:
               http:
                 port: 80
+                targetPort: 80
+              setup:
+                enabled: true
+                port: 3000
+                protocol: TCP
+                targetPort: 3000
+              dns-tcp:
+                enabled: true
+                port: 53
+                protocol: TCP
+                targetPort: 53
+              dns-udp:
+                enabled: true
+                port: 53
+                protocol: UDP
+                targetPort: 53
         persistence:
           config:
             enabled: true
