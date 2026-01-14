@@ -22,7 +22,7 @@ spec:
             ports:
               http:
                 port: 8080
-                targetPort: 80
+                targetPort: 8080
               setup:
                 enabled: true
                 port: 3000
