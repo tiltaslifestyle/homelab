@@ -37,6 +37,10 @@ spec:
                 port: 53
                 protocol: UDP
                 targetPort: 53
+          dns-tcp:
+            enabled: false
+          dns-udp:
+            enabled: false
         persistence:
           config:
             enabled: true
