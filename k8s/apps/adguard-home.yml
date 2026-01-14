@@ -20,7 +20,7 @@ spec:
             type: LoadBalancer
             ports:
               http:
-                port: 80
+                port: 8080
                 targetPort: 80
               setup:
                 enabled: true
