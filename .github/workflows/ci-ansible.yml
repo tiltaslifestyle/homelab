@@ -21,13 +21,12 @@ jobs:
       - name: Install Python Tools
         run: pip install yamllint ansible
 
-      - name: Install Ansible Collections
+      - name: Install Ansible collections
         run: |
-          ansible-galaxy collection install -r ansible/requirements.yml
-
-      - name: Install Ansible Collections
-        run: |
-          ansible-galaxy collection install -r ansible/requirements.yml
+          for i in 1 2 3; do
+            ansible-galaxy collection install -r ansible/requirements.yml --timeout 120 && break
+            sleep 10
+          done
 
       - name: Run Yamllint
         run: yamllint -c .yamllint -f standard ansible/
