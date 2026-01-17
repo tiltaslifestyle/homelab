@@ -1,0 +1,44 @@
+name: K8s Quality Gate
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'k8s/**'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'k8s/**'
+
+jobs:
+  lint:
+    name: K8s Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Yamllint
+        run: pip install yamllint
+
+      - name: Run Yamllint
+        run: yamllint -c .yamllint -f standard k8s/
+
+      - name: Install Kubeconform
+        uses: bmuschko/setup-kubeconform@v1
+        with:
+          kubeconform-version: 'latest'
+
+      - name: Run Kubeconform
+        run: kubeconform -summary -verbose -ignore-missing-schemas k8s/
+      
+      - name: Run Kube-linter
+        uses: stackrox/kube-linter-action@v1.0.4
+        with:
+          directory: "k8s/..."
+
+      - name: Setup Pluto
+        uses: FairwindsOps/pluto/github-action@master
+
+      - name: Run Pluto
+        run: pluto detect-files -d k8s/ --target-versions k8s=v1.26.0
