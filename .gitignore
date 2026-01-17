@@ -22,6 +22,7 @@ id_rsa
 # Python
 __pycache__/
 *.pyc
+*.log
 
 # Kubernetes / k3s (local only)
 .kube/
