@@ -26,8 +26,6 @@ jobs:
 
       - name: Install Kubeconform
         uses: bmuschko/setup-kubeconform@v1
-        with:
-          kubeconform-version: 'latest'
 
       - name: Run Kubeconform
         run: kubeconform -summary -verbose -ignore-missing-schemas k8s/
@@ -35,7 +33,7 @@ jobs:
       - name: Run Kube-linter
         uses: stackrox/kube-linter-action@v1.0.4
         with:
-          directory: "k8s/..."
+          directory: "k8s/"
 
       - name: Setup Pluto
         uses: FairwindsOps/pluto/github-action@master
