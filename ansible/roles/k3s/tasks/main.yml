@@ -34,19 +34,30 @@
   delegate_to: localhost
   become: false
 
-# Fetch file from remote Server to the Control Node
-- name: Fetch kubeconfig to local machine
+# Fetch to a temp file
+- name: Fetch kubeconfig to temporary location
   ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: ~/.kube/config
+    dest: /tmp/k3s_config_temp
     flat: true
   become: true
+  changed_when: false
 
-# Update config Control Node to point to the remote Server IP
-- name: Replace localhost IP with Server IP in local config
+# Edit the temp file
+- name: Replace localhost IP with Server IP in temp config
   ansible.builtin.replace:
-    path: ~/.kube/config
-    regexp: '127.0.0.1'
-    replace: "{{ inventory_hostname }}"
+    path: /tmp/k3s_config_temp
+    regexp: '127\.0\.0\.1'
+    replace: "{{ ansible_host }}"
+  delegate_to: localhost
+  become: false
+  changed_when: false
+
+# Copy to final destination
+- name: Update local kubeconfig only if changed
+  ansible.builtin.copy:
+    src: /tmp/k3s_config_temp
+    dest: ~/.kube/config
+    mode: '0600'
   delegate_to: localhost
   become: false

@@ -12,3 +12,8 @@ enabled = true
 port    = ssh
 logpath = /var/log/auth.log
 maxretry = 3
+
+# Custom Automated Response
+# Trigger Python script alongside iptables
+action = %(action_)s
+         automated-incident-response

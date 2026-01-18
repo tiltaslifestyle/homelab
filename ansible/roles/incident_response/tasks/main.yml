@@ -24,12 +24,15 @@
     mode: '0644'
   notify: Restart Fail2Ban
 
-- name: Activate Action in SSH Jail
-  ansible.builtin.blockinfile:
-    path: /etc/fail2ban/jail.local
-    insertafter: "banaction = iptables-multiport"
-    block: |
-      # Trigger Python script alongside iptables
-      action = %(action_)s
-               automated-incident-response
-  notify: Restart Fail2Ban
+# The Fail2ban configuration has been consolidated into the 'security' role template (jail.local.j2)
+# to prevent idempotency conflicts
+#
+# - name: Activate Action in SSH Jail
+#   ansible.builtin.blockinfile:
+#     path: /etc/fail2ban/jail.local
+#     insertafter: "banaction = iptables-multiport"
+#     block: |
+#       # Trigger Python script alongside iptables
+#       action = %(action_)s
+#                automated-incident-response
+#   notify: Restart Fail2Ban
