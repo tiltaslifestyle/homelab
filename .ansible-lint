@@ -1,0 +1,2 @@
+exclude_paths:
+  - ansible/inventory/group_vars/lab_servers.yml
