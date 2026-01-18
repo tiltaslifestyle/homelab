@@ -1,0 +1,10 @@
+---
+ansible_user: ANSIBLE_USER_NAME
+ansible_ssh_private_key_file: ~/.ssh/id_ed25519 OR ANOTHER_SSH_KEY_PATH
+ansible_ssh_public_key: ~/.ssh/id_ed25519.pub OR ANOTHER_SSH_KEY_PATH
+
+ansible_sudo_pass: SUDO_PASSWORD
+
+abuseipdb_api_key: ABUSEIPDB_API_KEY
+
+ntfy_topic: NTFY_TOPIC
