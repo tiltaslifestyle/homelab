@@ -32,7 +32,7 @@
     filename: docker
   register: docker_repo_add
 
-- name: Update apt cache after adding Docker repo
+- name: Update apt cache after adding Docker repo # noqa: no-handler
   ansible.builtin.apt:
     update_cache: true
   when: docker_repo_add.changed
