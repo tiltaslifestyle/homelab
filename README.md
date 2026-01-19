@@ -1,76 +1,72 @@
-# Homelab 
+# Homelab Infrastructure
+
 ![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
 ![Ansible](https://img.shields.io/badge/ansible-%231A1918.svg?style=for-the-badge&logo=ansible&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
+![ArgoCD](https://img.shields.io/badge/ArgoCD-ff6727?style=for-the-badge&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 
-## Repo Structure
-```
-homelab-infrastructure/
-├── ansible/                         # Ansible configuration & automation
-│   ├── inventory/                  
-│   │   ├── group_vars/              # Group-level variables
-│   │   │   └── lab_servers.yml      # Shared variables for lab servers
-│   │   └── hosts                    # Inventory file
-│   │
-│   ├── playbooks/                  # Standalone playbooks
-│   │   ├── bootstrap.yml            # Initial server bootstrap
-│   │   └── ping.yml                 # Connectivity test playbook
-│   │
-│   ├── roles/                      # Ansible roles
-│   │   ├── common/                  # Base system configuration
-│   │   │   ├── tasks/
-│   │   │   │   └── main.yml
-│   │   │   └── handlers/
-│   │   │       └── main.yml
-│   │   │
-│   │   ├── docker/                  # Docker installation and config
-│   │   │   ├── tasks/
-│   │   │   │   └── main.yml
-│   │   │   └── handlers/
-│   │   │       └── main.yml
-│   │   │
-│   │   ├── k3s/                     # Kubernetes (k3s) setup
-│   │   │   └── tasks/
-│   │   │       └── main.yml
-│   │   │
-│   │   └── security/                # Server security & hardening
-│   │       ├── tasks/
-│   │       │   └── main.yml
-│   │       ├── handlers/
-│   │       │   └── main.yml
-│   │       └── templates/
-│   │           └── sshd_config.j2   # SSH configuration template
-│   │
-│   ├── ansible.cfg                  # Global Ansible configuration
-│   └── site.yml                     # Main entry-point playbook
-│
-├── docs/                            # Project documentation
-│   └── k3s-architecture.md          # k3s cluster architecture
-│
-└── README.md                        # Project overview and usage
-```
+Infrastructure as Code (IaC) repository for managing my personal homelab via **Kubernetes (K3s)** and **Ansible**.
+This project implements GitOps practices to maintain the state of the home infrastructure, ensuring reliability, security, and reproducibility.
 
-## Homelab Infrastructure Map 
+## Tech Stack
+
+| Category | Technology | Description |
+|----------|------------|-------------|
+| **OS** | Ubuntu Server 24.04 LTS | Base operating system |
+| **Orchestration** | K3s | Lightweight Kubernetes distribution |
+| **Config Management** | Ansible | Node provisioning and configuration |
+| **CI/CD** | GitHub Actions | Automated linting and testing pipelines |
+| **GitOps** | ArgoCD | Continuous Delivery for K8s manifests |
+| **Security** | Fail2Ban, Ansible Vault | Intrusion prevention and secret management |
+| **Ingress** | Traefik | Edge router and Load Balancer |
+
+## Architecture
+
+The infrastructure acts as a central hub for network filtering, home automation, and media services.
 
 ```
 [ ISP / Internet ]
       │
       ▼
-[ Router ] (192.168.100.1)
+[ Router / Gateway ]
       │
-      ├── (Cable) ─── [ Sony BRAVIA 5 ] (Client for Jellyfin)
+      ├── WIRED (Ethernet)
+      │     │
+      │     ├── [ Multimedia Clients ] (Smart TV, etc.)
+      │     │
+      │     └── [ HOMELAB SERVER ] (ThinkPad L480)
+      │            │
+      │            ├── OS: Ubuntu Server
+      │            │
+      │            └── K3s Cluster (Single Node)
+      │                   ├── Namespace: adguard-home
+      │                   │     └─ Pod: AdGuard Home (Network-wide DNS)
+      │                   │
+      │                   ├── Namespace: home-automation
+      │                   │     └─ Pod: Home Assistant (Planned)
+      │                   │
+      │                   ├── Namespace: media
+      │                   │     └─ Pod: Jellyfin (Planned)
+      │                   │
+      │                   └── System: Traefik (Ingress), ArgoCD (GitOps)
       │
-      ├── (Cable) ─── [ ThinkPad L480 ] (Server - 192.168.100.30)
-      │                 │
-      │                 ├── Docker: Jellyfin
-      │                 ├── Docker: AdGuard Home 
-      │                 ├── Docker: Home Assistant 
-      │                 └── K3s Cluster
-      │
-      └── (Wi-Fi) ──── Macbook M3 (Ansible Control Node)
+      └── WIRELESS (Wi-Fi)
+            │
+            ├── [ Workstation ] (Control Node)
+            │      └─ Tools: Ansible, kubectl, git
+            │
+            └── [ IoT Infrastructure ]
+                   ├─ Device 01 (Environmental Sensors)
+                   ├─ Device 02 (Camera)
+                   └─ ... (Scalable Fleet)
 ```
 
-## Server Hardware Specs
-- Node: Lenovo ThinkPad L480
-- CPU: i5-8250U (4c/8t)
-- RAM: 8GB
-- OS: Ubuntu Server 24.04 LTS
+# Hardware Specs
+The cluster runs on bare metal hardware, repurposed for energy efficiency.
+
+- **Node:** Lenovo ThinkPad L480
+- **CPU:** Intel Core i5-8250U (4 cores / 8 threads)
+- **RAM:** 8GB DDR4
+- **Storage:** NVMe SSD
+- **Power:** Integrated UPS (Laptop Battery)
