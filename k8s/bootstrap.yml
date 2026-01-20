@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/tiltaslifestyle/homelab-infrastructure.git'
+    repoURL: 'https://github.com/tiltaslifestyle/homelab.git' # CHANGE THIS TO YOUR REPO URL
     targetRevision: main
     path: k8s/apps
 
