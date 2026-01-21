@@ -48,7 +48,7 @@
   ansible.builtin.replace:
     path: /tmp/k3s_config_temp
     regexp: '127\.0\.0\.1'
-    replace: "{{ ansible_host }}"
+    replace: "{{ lab_ip }}"
   delegate_to: localhost
   become: false
   changed_when: false

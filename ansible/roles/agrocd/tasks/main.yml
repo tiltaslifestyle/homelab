@@ -47,7 +47,7 @@
           kubernetes.io/ingress.class: traefik
       spec:
         rules:
-          - host: "argocd.{{ inventory_hostname }}.nip.io"
+          - host: "argocd.{{ lab_ip }}.nip.io"
             http:
               paths:
                 - path: /
