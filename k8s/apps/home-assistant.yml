@@ -1,0 +1,53 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: home-assistant
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://pajikos.github.io/home-assistant-helm-chart
+    chart: home-assistant
+    targetRevision: 0.3.41
+    helm:
+      releaseName: home-assistant
+      values: |
+        replicaCount: 1
+        service:
+          main:
+            type: ClusterIP
+            port: 8080
+        ingress:
+          enabled: true
+          hosts:
+            - host: home-assistant.local
+              paths:
+                - path: /
+                  pathType: Prefix
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2048Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        configuration:
+          enabled: true
+          trusted_proxies:
+            - 10.42.0.0/16
+            - 192.168.0.0/16
+        persistence:
+          enabled: true
+          accessMode: ReadWriteOnce
+          size: 5Gi
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: home-assistant
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
