@@ -22,7 +22,7 @@ spec:
         ingress:
           enabled: true
           hosts:
-            - host: home-assistant.local
+            - host: home-assistant.lan
               paths:
                 - path: /
                   pathType: Prefix
