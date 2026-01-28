@@ -8,7 +8,7 @@
 ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 
 Infrastructure as Code (IaC) monorepo for managing my personal homelab via **Kubernetes (K3s)** and **Ansible**.
-This project implements **GitOps** practices to maintain the state of the home infrastructure, ensuring reliability, security and reproducibility.
+This project implements **GitOps (ArgoCD)** practices to maintain the state of the home infrastructure, ensuring reliability, security and reproducibility.
 
 ## Tech Stack
 
@@ -46,7 +46,7 @@ The homelab server acts as a central hub for network filtering, home automation 
       │                   │     └─ Pod: AdGuard Home (Network-wide DNS)
       │                   │
       │                   ├── Namespace: home-assistant
-      │                   │     └─ Pod: Home Assistant (Planned)
+      │                   │     └─ Pod: Home Assistant (Home automation)
       │                   │
       │                   ├── Namespace: jellyfin
       │                   │     └─ Pod: Jellyfin (Planned)
@@ -75,8 +75,7 @@ The homelab server acts as a central hub for network filtering, home automation 
 │   └── roles/           # Roles: docker, k3s, security, etc.
 ├── docs/                # Documentation and diagrams
 └── k8s/                 # Kubernetes manifests (GitOps source)
-    ├── apps/            # Application definitions (Helm)
-    └── bootstrap/       # Initial cluster setup (ArgoCD)
+    └── apps/            # Application definitions (Helm)
 ```
 
 ## Hardware Specs
@@ -134,7 +133,7 @@ ansible-playbook ansible/playbooks/bootstrap.yml --ask-vault-pass
         ```
 
 ## Roadmap
-- [ ] **Home Automation:** Integrate Home Assistant for IoT orchestration
+- [x] **Home Automation:** Integrate Home Assistant for IoT orchestration
 - [ ] **VPN Access:** Setup WireGuard for secure remote access
 - [ ] **Observability:** Deploy Prometheus & Grafana stack for monitoring
 - [ ] **Dashboard:** Configure Homepage for centralized service access
