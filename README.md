@@ -134,8 +134,8 @@ ansible-playbook ansible/playbooks/bootstrap.yml --ask-vault-pass
 
 ## Roadmap
 - [x] **Home Automation:** Integrate Home Assistant for IoT orchestration
+- [x] **Dashboard:** Configure Homepage for centralized service access
 - [ ] **VPN Access:** Setup WireGuard for secure remote access
 - [ ] **Observability:** Deploy Prometheus & Grafana stack for monitoring
-- [ ] **Dashboard:** Configure Homepage for centralized service access
 - [ ] **Media Center:** Deploy Jellyfin for local streaming
 - [ ] **Disaster Recovery:** Implement encrypted off-site backups
