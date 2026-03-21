@@ -1,0 +1,58 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homer-dashboard
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://djjudas21.github.io/charts/
+    chart: homer
+    targetRevision: 8.2.4
+    helm:
+      releaseName: homer-dashboard
+      values: |
+        replicaCount: 1
+        service:
+          main:
+            type: ClusterIP
+            port: 8080
+        ingress:
+          main:
+            enabled: true
+            hosts:
+              - host: homepage.lan
+                paths:
+                  - path: /
+                    pathType: Prefix
+        configmap:
+          config:
+            enabled: false
+        persistence:
+          config:
+            enabled: true
+            type: emptyDir
+            mountPath: /www/assets
+        initContainers:
+          git-clone:
+            image: alpine/git:latest
+            command:
+              - /bin/sh
+              - -c
+              - "git clone https://github.com/tiltaslifestyle/homer-dashboard-config.git /tmp/git-repo && cp -r /tmp/git-repo/* /www/assets/ && chmod -R 777 /www/assets/"
+            volumeMounts:
+              - name: config
+                mountPath: /www/assets
+        env:
+          TZ: CET
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: homer-dashboard
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
