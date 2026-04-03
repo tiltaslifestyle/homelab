@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: esphome
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://charts.jeffresc.dev
+    chart: esphome
+    targetRevision: 0.2.0
+    helm:
+      releaseName: esphome
+      values: |
+        replicaCount: 1
+        ingress:
+          enabled: true
+          hosts:
+            - host: esphome.lan
+              paths:
+                - path: /
+                  pathType: Prefix
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        persistence:
+          enabled: true
+          size: 5Gi
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: esphome
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
