@@ -32,6 +32,7 @@ spec:
         persistence:
           enabled: true
           size: 5Gi
+          storageClass: local-path
   destination:
     server: "https://kubernetes.default.svc"
     namespace: esphome
