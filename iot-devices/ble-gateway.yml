@@ -1,0 +1,27 @@
+esphome:
+  name: ble-gateway
+  friendly_name: BLE Gateway Hub
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+logger:
+
+api:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "BLE-Gateway-Fallback"
+    password: !secret fallback_password
+
+captive_portal:
+
+esp32_ble_tracker:
+
+bluetooth_proxy:
+  active: true

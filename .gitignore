@@ -29,3 +29,6 @@ __pycache__/
 kubeconfig
 kubeconfig-*
 k8s/repo-secret.yml
+
+# IoT devices
+iot-devices/secrets.yml
