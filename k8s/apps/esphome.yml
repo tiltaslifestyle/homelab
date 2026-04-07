@@ -33,6 +33,8 @@ spec:
           enabled: true
           size: 5Gi
           storageClass: local-path
+        securityContext:
+          readOnlyRootFilesystem: false
   destination:
     server: "https://kubernetes.default.svc"
     namespace: esphome
