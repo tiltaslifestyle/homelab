@@ -31,8 +31,6 @@ spec:
               paths:
                 - path: /
                   pathType: Prefix
-        podAnnotations:
-          configmap.reloader.stakater.com/reload: "home-assistant-dashboard-minimal"
         resources:
           limits:
             cpu: 1000m
@@ -42,38 +40,9 @@ spec:
             memory: 512Mi
         configuration:
           enabled: true
-          forceInit: true
           trusted_proxies:
             - 10.42.0.0/16
             - 192.168.0.0/16
-          templateConfig: |
-            default_config:
-            frontend:
-              themes: !include_dir_merge_named themes
-            automation: !include automations.yaml
-            script: !include scripts.yaml
-            scene: !include scenes.yaml
-
-            lovelace:
-              mode: storage
-              resources:
-                - url: https://cdn.jsdelivr.net/npm/lovelace-mushroom@4.3.1/dist/mushroom.js
-                  type: module
-              dashboards:
-                daily-minimal:
-                  mode: yaml
-                  title: Daily
-                  icon: mdi:home-heart
-                  show_in_sidebar: true
-                  filename: dashboards/minimal.yaml
-        additionalVolumes:
-          - name: dashboard-minimal
-            configMap:
-              name: home-assistant-dashboard-minimal
-        additionalMounts:
-          - name: dashboard-minimal
-            mountPath: /config/dashboards/minimal.yaml
-            subPath: minimal.yaml
         persistence:
           enabled: true
           accessMode: ReadWriteOnce
