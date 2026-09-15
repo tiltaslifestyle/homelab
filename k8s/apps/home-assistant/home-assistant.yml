@@ -60,7 +60,7 @@ spec:
                 - url: https://cdn.jsdelivr.net/npm/lovelace-mushroom@4.3.1/dist/mushroom.js
                   type: module
               dashboards:
-                minimal:
+                daily-minimal:
                   mode: yaml
                   title: Daily
                   icon: mdi:home-heart
