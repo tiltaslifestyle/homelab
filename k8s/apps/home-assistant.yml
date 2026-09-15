@@ -10,10 +10,13 @@ spec:
   source:
     repoURL: https://pajikos.github.io/home-assistant-helm-chart
     chart: home-assistant
-    targetRevision: 0.3.41
+    targetRevision: 0.3.81
     helm:
       releaseName: home-assistant
       values: |
+        image:
+          repository: ghcr.io/home-assistant/home-assistant
+          tag: "2026.9.2"
         replicaCount: 1
         hostNetwork: true
         dnsPolicy: ClusterFirstWithHostNet
