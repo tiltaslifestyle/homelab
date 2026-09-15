@@ -60,14 +60,21 @@ This repository is an **Infrastructure as Code (IaC) monorepo** for a personal h
     ├── bootstrap.yml              # Root ArgoCD "App-of-Apps" Application manifest
     ├── repo-secret.yml            # ArgoCD repository credentials (for private repo access)
     ├── repo-secret.yml.example    # Example template for repo-secret.yml
-    └── apps/                      # ArgoCD Application manifests for all homelab services
-        ├── adguard-home.yml       # Network-wide DNS & ad-blocking (LoadBalancer on port 53)
-        ├── esphome.yml            # ESPHome management dashboard (ingress: esphome.lan)
-        ├── home-assistant.yml     # Home Assistant (hostNetwork: true, ingress: home-assistant.lan)
-        ├── homer-dashboard.yml    # Personal dashboard homepage (ingress: homepage.lan)
-        ├── kube-prometheus-stack.yml # Prometheus & Grafana stack (ingress: grafana.lan)
-        ├── reloader.yml           # Stakater Reloader for configmap/secret reloads
-        └── uptime-kuma.yml        # Uptime Kuma monitoring (ingress: uptime-kuma.lan)
+    └── apps/                      # ArgoCD Application manifests organized in subdirectories
+        ├── adguard-home/
+        │   └── adguard-home.yml   # Network-wide DNS & ad-blocking (LoadBalancer on port 53)
+        ├── esphome/
+        │   └── esphome.yml        # ESPHome management dashboard (ingress: esphome.lan)
+        ├── home-assistant/
+        │   └── home-assistant.yml # Home Assistant (hostNetwork: true, ingress: home-assistant.lan)
+        ├── homer-dashboard/
+        │   └── homer-dashboard.yml # Personal dashboard homepage (ingress: homepage.lan)
+        ├── kube-prometheus-stack/
+        │   └── kube-prometheus-stack.yml # Prometheus & Grafana stack (ingress: grafana.lan)
+        ├── reloader/
+        │   └── reloader.yml       # Stakater Reloader for configmap/secret reloads
+        └── uptime-kuma/
+            └── uptime-kuma.yml    # Uptime Kuma monitoring (ingress: uptime-kuma.lan)
 ```
 
 ---
@@ -176,8 +183,8 @@ flowchart TD
 
 ### GitOps Continuous Delivery (ArgoCD)
 - Deployment is **pull-based**: nothing in Kubernetes is deployed via `kubectl apply` directly in CI.
-- The root application [k8s/bootstrap.yml](file:///k8s/bootstrap.yml) targets `path: k8s/apps`.
-- Any ArgoCD `Application` YAML placed inside `k8s/apps/` is automatically discovered, deployed, and synchronized by ArgoCD.
+- The root application [k8s/bootstrap.yml](file:///k8s/bootstrap.yml) targets `path: k8s/apps` with `directory.recurse: true`.
+- Any ArgoCD `Application` YAML placed inside `k8s/apps/**/` is automatically discovered, deployed, and synchronized by ArgoCD.
 - Sync policies are configured with `automated: { prune: true, selfHeal: true }` and `syncOptions: [CreateNamespace=true]`.
 
 ---
@@ -196,7 +203,7 @@ The physical cluster node is a repurposed laptop with **8GB of RAM**.
   - `reloader`: `requests.memory: 128Mi`, `limits.memory: 256Mi`
 
 ### 5.2 Kubernetes / ArgoCD Conventions
-- **Application format**: All manifests in `k8s/apps/` MUST be `apiVersion: argoproj.io/v1alpha1`, `kind: Application`.
+- **Application format**: All manifests in `k8s/apps/**/` MUST be `apiVersion: argoproj.io/v1alpha1`, `kind: Application`.
 - **Target namespace**: ArgoCD child applications declare their workload destination namespace under `spec.destination.namespace`. Make sure `spec.syncPolicy.syncOptions` includes `CreateNamespace=true`.
 - **Finalizers**: Standardize on `resources-finalizer.argocd.argoproj.io` in metadata to ensure clean cascading deletes when an application manifest is removed.
 - **Ingress**: K3s uses **Traefik** as its built-in ingress controller. Use local `.lan` hostnames (e.g. `<service-name>.lan`). Ingress annotations or class should specify `traefik`.
@@ -220,7 +227,7 @@ The physical cluster node is a repurposed laptop with **8GB of RAM**.
 ## 6. Common Recipes for Agents
 
 ### Recipe 1: Adding a New Service via ArgoCD
-1. Create a new manifest file in `k8s/apps/<service-name>.yml`.
+1. Create a new manifest file in `k8s/apps/<service-name>/<service-name>.yml`.
 2. Use this template:
    ```yaml
    apiVersion: argoproj.io/v1alpha1
@@ -266,12 +273,12 @@ The physical cluster node is a repurposed laptop with **8GB of RAM**.
    ```
 3. Run validations:
    ```bash
-   yamllint -c .yamllint -f standard k8s/apps/<service-name>.yml
+   yamllint -c .yamllint -f standard k8s/apps/<service-name>/<service-name>.yml
    kubeconform -summary -verbose -ignore-missing-schemas k8s/
    ```
 
 ### Recipe 2: Updating an Existing Application Version
-1. Identify the target file in `k8s/apps/<app>.yml`.
+1. Identify the target file in `k8s/apps/<app>/<app>.yml`.
 2. Update `targetRevision` (for Helm charts) or `image.tag` under `helm.values`.
 3. Check release notes for breaking changes in values schema.
 4. Run `yamllint -c .yamllint -f standard k8s/` and commit using `chore(<app>): bump version to ...`.
