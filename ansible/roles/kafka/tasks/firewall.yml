@@ -1,0 +1,11 @@
+---
+- name: UFW - Allow Kafka broker SSL listeners
+  community.general.ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+    comment: 'Kafka Broker SSL'
+  loop:
+    - '9092'
+    - '9094'
+    - '9095'

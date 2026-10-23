@@ -1,0 +1,20 @@
+---
+- name: Install Kafka prerequisites
+  ansible.builtin.include_tasks: prereqs.yml
+  tags: kafka
+
+- name: Apply sysctl & OS limits for Kafka
+  ansible.builtin.include_tasks: sysctl.yml
+  tags: kafka
+
+- name: Generate mTLS PKI (CA, Keystores, Truststores)
+  ansible.builtin.include_tasks: pki.yml
+  tags: kafka
+
+- name: Deploy Kafka Cluster via Docker Compose
+  ansible.builtin.include_tasks: deploy.yml
+  tags: kafka
+
+- name: Open firewall ports required for Kafka clients
+  ansible.builtin.include_tasks: firewall.yml
+  tags: kafka

@@ -11,3 +11,5 @@
     - role: k3s               # Kubernetes
     - role: helm              # Package manager
     - role: agrocd            # GitOps
+    - role: kafka             # Kafka Cluster
+      tags: kafka

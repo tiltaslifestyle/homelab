@@ -1,0 +1,125 @@
+version: '3.8'
+
+networks:
+  kafka-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+services:
+  kafka1:
+    image: confluentinc/cp-kafka:{{ kafka_image_tag }}
+    container_name: kafka1
+    hostname: kafka1
+    mem_limit: 384m
+    networks:
+      kafka-net:
+        ipv4_address: 172.20.0.11
+    ports:
+      - "9092:9092"
+      - "127.0.0.1:9101:9101" # JMX Metrics port, loopback only
+    volumes:
+      - "{{ pki_dir }}:/etc/kafka/secrets"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:SSL,SSL:SSL'
+      KAFKA_ADVERTISED_LISTENERS: 'SSL://kafka1:9092'
+      KAFKA_LISTENERS: 'SSL://kafka1:9092,CONTROLLER://kafka1:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'SSL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+
+      # SSL / mTLS Configuration
+      KAFKA_SSL_KEYSTORE_LOCATION: '/etc/kafka/secrets/kafka1.keystore.jks'
+      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_KEY_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_TRUSTSTORE_LOCATION: '/etc/kafka/secrets/kafka.truststore.jks'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_CLIENT_AUTH: 'required'
+
+      # JVM Memory Limits
+      KAFKA_HEAP_OPTS: "-Xms128m -Xmx256m"
+
+      # KRaft Cluster ID
+      CLUSTER_ID: '4L62D322T5iT_1B824_QzA'
+
+  kafka2:
+    image: confluentinc/cp-kafka:{{ kafka_image_tag }}
+    container_name: kafka2
+    hostname: kafka2
+    mem_limit: 384m
+    networks:
+      kafka-net:
+        ipv4_address: 172.20.0.12
+    ports:
+      - "9094:9092"
+      - "127.0.0.1:9102:9101"
+    volumes:
+      - "{{ pki_dir }}:/etc/kafka/secrets"
+    environment:
+      KAFKA_NODE_ID: 2
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:SSL,SSL:SSL'
+      KAFKA_ADVERTISED_LISTENERS: 'SSL://kafka2:9092'
+      KAFKA_LISTENERS: 'SSL://kafka2:9092,CONTROLLER://kafka2:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'SSL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_SSL_KEYSTORE_LOCATION: '/etc/kafka/secrets/kafka2.keystore.jks'
+      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_KEY_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_TRUSTSTORE_LOCATION: '/etc/kafka/secrets/kafka.truststore.jks'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_CLIENT_AUTH: 'required'
+      KAFKA_HEAP_OPTS: "-Xms128m -Xmx256m"
+      CLUSTER_ID: '4L62D322T5iT_1B824_QzA'
+
+  kafka3:
+    image: confluentinc/cp-kafka:{{ kafka_image_tag }}
+    container_name: kafka3
+    hostname: kafka3
+    mem_limit: 384m
+    networks:
+      kafka-net:
+        ipv4_address: 172.20.0.13
+    ports:
+      - "9095:9092"
+      - "127.0.0.1:9103:9101"
+    volumes:
+      - "{{ pki_dir }}:/etc/kafka/secrets"
+    environment:
+      KAFKA_NODE_ID: 3
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:SSL,SSL:SSL'
+      KAFKA_ADVERTISED_LISTENERS: 'SSL://kafka3:9092'
+      KAFKA_LISTENERS: 'SSL://kafka3:9092,CONTROLLER://kafka3:9093'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'SSL'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_SSL_KEYSTORE_LOCATION: '/etc/kafka/secrets/kafka3.keystore.jks'
+      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_KEY_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_TRUSTSTORE_LOCATION: '/etc/kafka/secrets/kafka.truststore.jks'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_CLIENT_AUTH: 'required'
+      KAFKA_HEAP_OPTS: "-Xms128m -Xmx256m"
+      CLUSTER_ID: '4L62D322T5iT_1B824_QzA'
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    hostname: postgres
+    mem_limit: 384m
+    networks:
+      kafka-net:
+        ipv4_address: 172.20.0.20
+    environment:
+      POSTGRES_DB: dns_analytics
+      POSTGRES_USER: kafka_user
+      POSTGRES_PASSWORD: '{{ kafka_postgres_password }}'
+    command:
+      - "postgres"
+      - "-c"
+      - "wal_level=logical"

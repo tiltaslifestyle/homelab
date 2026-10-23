@@ -1,0 +1,60 @@
+---
+- name: Ensure PKI directory exists
+  ansible.builtin.file:
+    path: "{{ pki_dir }}"
+    state: directory
+    mode: '0700'
+
+- name: Generate Root CA Private Key and Certificate
+  ansible.builtin.command: >
+    openssl req -new -x509 -keyout {{ pki_dir }}/ca-key
+    -out {{ pki_dir }}/ca-cert
+    -days {{ cert_validity_days | default(365) }} -nodes
+    -subj "/CN=HomelabKafkaCA/OU=DevOps/O=Homelab/L=Warsaw/C=PL"
+  args:
+    creates: "{{ pki_dir }}/ca-cert"
+  no_log: true
+
+- name: Restrict permissions on Root CA private key and certificate
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0600'
+  loop:
+    - "{{ pki_dir }}/ca-key"
+    - "{{ pki_dir }}/ca-cert"
+
+- name: Create Common Truststore containing Root CA
+  ansible.builtin.command: >
+    keytool -keystore {{ pki_dir }}/kafka.truststore.jks -alias CARoot
+    -import -noprompt -file {{ pki_dir }}/ca-cert
+    -storepass {{ cert_pass }}
+  args:
+    creates: "{{ pki_dir }}/kafka.truststore.jks"
+  no_log: true
+
+- name: Restrict permissions on common truststore
+  ansible.builtin.file:
+    path: "{{ pki_dir }}/kafka.truststore.jks"
+    mode: '0600'
+
+- name: Generate Keystores, CSRs and Sign Certs for Brokers
+  ansible.builtin.include_tasks: generate_broker_cert.yml
+  loop:
+    - { name: 'kafka1', ip: '172.20.0.11' }
+    - { name: 'kafka2', ip: '172.20.0.12' }
+    - { name: 'kafka3', ip: '172.20.0.13' }
+  loop_control:
+    loop_var: broker
+
+- name: Create client.properties for CLI SSL authentication testing
+  ansible.builtin.copy:
+    dest: "{{ pki_dir }}/client.properties"
+    content: |
+      security.protocol=SSL
+      ssl.truststore.location=/etc/kafka/secrets/kafka.truststore.jks
+      ssl.truststore.password={{ cert_pass }}
+      ssl.keystore.location=/etc/kafka/secrets/kafka1.keystore.jks
+      ssl.keystore.password={{ cert_pass }}
+      ssl.key.password={{ cert_pass }}
+    mode: '0600'
+  no_log: true

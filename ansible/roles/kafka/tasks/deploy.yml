@@ -1,0 +1,18 @@
+---
+- name: Ensure target deployment directory exists on host
+  ansible.builtin.file:
+    path: "{{ deploy_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Template docker-compose.yml from repository kafka_setup folder
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ deploy_dir }}/docker-compose.yml"
+    mode: '0644'
+  no_log: true
+
+- name: Run Kafka cluster via Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ deploy_dir }}"
+    state: present

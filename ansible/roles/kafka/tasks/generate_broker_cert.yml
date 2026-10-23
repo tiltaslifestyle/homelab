@@ -1,0 +1,72 @@
+---
+- name: Generate KeyPair and Keystore for {{ broker.name }}
+  ansible.builtin.command: >
+    keytool -keystore {{ pki_dir }}/{{ broker.name }}.keystore.jks
+    -alias {{ broker.name }} -validity {{ cert_validity_days }}
+    -genkey -keyalg RSA -ext SAN=dns:{{ broker.name }},ip:{{ broker.ip }},ip:127.0.0.1
+    -dname "CN={{ broker.name }},OU=DevOps,O=Homelab,L=Warsaw,C=PL"
+    -storepass {{ cert_pass }}
+    -keypass {{ cert_pass }}
+  args:
+    creates: "{{ pki_dir }}/{{ broker.name }}.keystore.jks"
+  no_log: true
+
+- name: Export CSR for {{ broker.name }}
+  ansible.builtin.command: >
+    keytool -keystore {{ pki_dir }}/{{ broker.name }}.keystore.jks
+    -alias {{ broker.name }} -certreq -file {{ pki_dir }}/{{ broker.name }}.csr
+    -storepass {{ cert_pass }}
+  args:
+    creates: "{{ pki_dir }}/{{ broker.name }}.csr"
+  no_log: true
+
+- name: Write SAN extension file for {{ broker.name }}
+  ansible.builtin.copy:
+    dest: "{{ pki_dir }}/{{ broker.name }}.ext"
+    content: "subjectAltName=DNS:{{ broker.name }},IP:{{ broker.ip }},IP:127.0.0.1\n"
+    mode: '0600'
+
+- name: Sign CSR with Root CA for {{ broker.name }}
+  ansible.builtin.command: >
+    openssl x509 -req -CA {{ pki_dir }}/ca-cert
+    -CAkey {{ pki_dir }}/ca-key
+    -in {{ pki_dir }}/{{ broker.name }}.csr
+    -out {{ pki_dir }}/{{ broker.name }}-signed.crt
+    -days {{ cert_validity_days }} -CAcreateserial
+    -extfile {{ pki_dir }}/{{ broker.name }}.ext
+  args:
+    creates: "{{ pki_dir }}/{{ broker.name }}-signed.crt"
+
+- name: Import CA into Broker Keystore for {{ broker.name }}
+  ansible.builtin.command: >
+    keytool -keystore {{ pki_dir }}/{{ broker.name }}.keystore.jks
+    -alias CARoot -import -noprompt -file {{ pki_dir }}/ca-cert
+    -storepass {{ cert_pass }}
+  register: import_ca_result
+  changed_when: "'Certificate was added to keystore' in import_ca_result.stdout"
+  failed_when: >
+    import_ca_result.rc != 0 and
+    'already exists' not in import_ca_result.stderr
+  no_log: true
+
+- name: Import Signed Cert into Broker Keystore for {{ broker.name }}
+  ansible.builtin.command: >
+    keytool -keystore {{ pki_dir }}/{{ broker.name }}.keystore.jks
+    -alias {{ broker.name }} -import -noprompt -file {{ pki_dir }}/{{ broker.name }}-signed.crt
+    -storepass {{ cert_pass }}
+    -keypass {{ cert_pass }}
+  register: import_cert_result
+  changed_when: "'Certificate reply was installed in keystore' in import_cert_result.stdout"
+  failed_when: >
+    import_cert_result.rc != 0 and
+    'already exists' not in import_cert_result.stderr
+  no_log: true
+
+- name: Restrict permissions on {{ broker.name }} keystore and CSR artifacts
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0600'
+  loop:
+    - "{{ pki_dir }}/{{ broker.name }}.keystore.jks"
+    - "{{ pki_dir }}/{{ broker.name }}.csr"
+    - "{{ pki_dir }}/{{ broker.name }}-signed.crt"

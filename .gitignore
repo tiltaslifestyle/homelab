@@ -32,3 +32,8 @@ k8s/repo-secret.yml
 
 # IoT devices
 iot-devices/secrets.yml
+
+# GitHub Specify & Agent configurations
+.agents/
+.specify/
+specs/

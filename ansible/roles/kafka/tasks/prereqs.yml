@@ -1,0 +1,10 @@
+---
+- name: Ensure apt cache is fresh
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install OpenJDK (for keytool)
+  ansible.builtin.package:
+    name: openjdk-17-jre-headless
+    state: present

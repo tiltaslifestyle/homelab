@@ -1,0 +1,6 @@
+---
+pki_dir: "/opt/kafka_setup/pki"
+cert_pass: "{{ kafka_cert_pass }}"
+cert_validity_days: 365
+deploy_dir: "/opt/kafka_setup"
+kafka_image_tag: "7.8.0"

@@ -8,3 +8,7 @@ ansible_sudo_pass: SUDO_PASSWORD
 abuseipdb_api_key: ABUSEIPDB_API_KEY
 
 ntfy_topic: NTFY_TOPIC
+
+kafka_cert_pass: KAFKA_PKI_KEYSTORE_TRUSTSTORE_PASSWORD
+
+kafka_postgres_password: KAFKA_POSTGRES_PASSWORD
