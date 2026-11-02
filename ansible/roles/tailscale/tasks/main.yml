@@ -1,0 +1,82 @@
+---
+- name: Download Tailscale GPG key
+  ansible.builtin.get_url:
+    url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release }}.noarmor.gpg"
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: '0644'
+
+- name: Add Tailscale apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release }} main"
+    state: present
+    filename: tailscale
+  register: tailscale_repo_add
+
+- name: Update apt cache after adding Tailscale repo # noqa: no-handler
+  ansible.builtin.apt:
+    update_cache: true
+  when: tailscale_repo_add.changed
+
+- name: Install Tailscale
+  ansible.builtin.apt:
+    name: tailscale
+    state: present
+
+- name: Ensure tailscaled is started and enabled
+  ansible.builtin.service:
+    name: tailscaled
+    state: started
+    enabled: true
+
+- name: Enable IP forwarding for subnet router / exit node
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: '1'
+    sysctl_file: /etc/sysctl.d/99-tailscale.conf
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - net.ipv4.ip_forward
+    - net.ipv6.conf.all.forwarding
+
+- name: UFW - Allow Tailscale WireGuard port
+  community.general.ufw:
+    rule: allow
+    port: '41641'
+    proto: udp
+    comment: 'Tailscale direct connections'
+
+- name: UFW - Allow inbound traffic on tailscale0
+  community.general.ufw:
+    rule: allow
+    interface: tailscale0
+    direction: in
+    comment: 'Tailscale'
+
+- name: UFW - Allow forwarding from tailscale0 (subnet router / exit node)
+  community.general.ufw:
+    rule: allow
+    route: true
+    interface_in: tailscale0
+    comment: 'Tailscale routing'
+
+- name: Get Tailscale status
+  ansible.builtin.command: tailscale status --json
+  register: tailscale_status
+  changed_when: false
+  failed_when: false
+
+- name: Bring Tailscale up
+  ansible.builtin.command: >-
+    tailscale up
+    --authkey={{ tailscale_authkey }}
+    --hostname={{ tailscale_hostname }}
+    --advertise-routes={{ tailscale_advertise_routes }}
+    {{ '--advertise-exit-node' if tailscale_advertise_exit_node else '' }}
+    {{ tailscale_extra_args }}
+  when: >-
+    tailscale_status.rc != 0
+    or (tailscale_status.stdout | from_json).BackendState != 'Running'
+  changed_when: true
+  no_log: true

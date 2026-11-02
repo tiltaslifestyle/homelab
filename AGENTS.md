@@ -48,6 +48,7 @@ This repository is an **Infrastructure as Code (IaC) monorepo** for a personal h
 │       ├── security/              # Hardening: SSH config, UFW firewall, Fail2Ban
 │       ├── incident_response/     # Automated incident response tool integration
 │       ├── docker/                # Official Docker CE repo & package setup
+│       ├── tailscale/             # Tailscale VPN (subnet router + exit node)
 │       ├── k3s/                   # K3s installation & kubeconfig extraction
 │       ├── helm/                  # Helm CLI installation
 │       └── argocd/                # ArgoCD Helm install & Traefik ingress configuration

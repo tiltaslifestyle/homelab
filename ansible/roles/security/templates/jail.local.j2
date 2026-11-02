@@ -1,6 +1,6 @@
 [DEFAULT]
-# Whitelist Localhost + Home Network
-ignoreip = 127.0.0.1/8 ::1 192.168.100.0/24
+# Whitelist Localhost + Home Network + Tailscale tailnet (IPv4 CGNAT / IPv6 ULA)
+ignoreip = 127.0.0.1/8 ::1 192.168.100.0/24 100.64.0.0/10 fd7a:115c:a1e0::/48
 
 bantime = 1h
 findtime = 10m

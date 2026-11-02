@@ -132,10 +132,21 @@ ansible-playbook ansible/playbooks/bootstrap.yml --ask-vault-pass
         kubectl apply -f k8s/bootstrap.yaml
         ```
 
+## Remote Access (Tailscale)
+The `tailscale` Ansible role installs Tailscale on the host (independent of K3s) and advertises the LAN `192.168.100.0/24` as a subnet route plus an exit node.
+
+1. Generate an auth key in the Tailscale admin console and add it to the vault as `tailscale_authkey`.
+2. Run the role: `ansible-playbook ansible/playbooks/bootstrap.yml --tags tailscale --ask-vault-pass`
+3. In the admin console, open the `lab-main` machine:
+   - Approve the subnet route and the exit node.
+   - Disable key expiry.
+4. Under DNS, add nameserver `192.168.100.30` (AdGuard Home) and enable **Override DNS servers**.
+5. On your phone, install the Tailscale app, log in, and optionally select `lab-main` as the exit node.
+
 ## Roadmap
 - [x] **Home Automation:** Integrate Home Assistant for IoT orchestration
 - [x] **Dashboard:** Configure Homepage for centralized service access
-- [ ] **VPN Access:** Setup WireGuard for secure remote access
+- [x] **VPN Access:** Tailscale subnet router + exit node for secure remote access
 - [ ] **Observability:** Deploy Prometheus & Grafana stack for monitoring
 - [ ] **Media Center:** Deploy Jellyfin for local streaming
 - [ ] **Disaster Recovery:** Implement encrypted off-site backups
