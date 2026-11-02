@@ -6,8 +6,8 @@
     state: present
     reload: yes
   loop:
-    - { key: 'vm.swappiness', value: '1' }
-    - { key: 'vm.max_map_count', value: '262144' }
+    - {key: 'vm.swappiness', value: '1'}
+    - {key: 'vm.max_map_count', value: '262144'}
 
 - name: Increase open files limit (ulimit -n)
   community.general.pam_limits:
@@ -16,5 +16,5 @@
     limit_item: nofile
     value: '65536'
   loop:
-    - { type: 'soft' }
-    - { type: 'hard' }
+    - {type: 'soft'}
+    - {type: 'hard'}

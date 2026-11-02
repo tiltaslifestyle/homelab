@@ -31,7 +31,7 @@
       server:
         extraArgs:
           - --insecure
-  register: argocd_install
+  register: argocd_helm_install
 
 - name: Create Ingress for ArgoCD
   kubernetes.core.k8s:

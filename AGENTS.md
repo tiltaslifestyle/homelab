@@ -50,7 +50,7 @@ This repository is an **Infrastructure as Code (IaC) monorepo** for a personal h
 │       ├── docker/                # Official Docker CE repo & package setup
 │       ├── k3s/                   # K3s installation & kubeconfig extraction
 │       ├── helm/                  # Helm CLI installation
-│       └── agrocd/                # ArgoCD Helm install & Traefik ingress configuration
+│       └── argocd/                # ArgoCD Helm install & Traefik ingress configuration
 ├── docs/
 │   └── infrastructure_map.md      # ASCII network topology diagram
 ├── iot-devices/
@@ -219,7 +219,7 @@ The physical cluster node is a repurposed laptop with **8GB of RAM**.
 
 ### 5.4 Ansible Conventions
 - **Pipelining**: Enabled in `ansible.cfg`.
-- **Role Naming Note**: The ArgoCD role directory is named `agrocd` ([ansible/roles/agrocd](file:///ansible/roles/agrocd)) and referenced as `- role: agrocd` in [ansible/playbooks/bootstrap.yml](file:///ansible/playbooks/bootstrap.yml). Preserve this naming consistency unless executing a coordinated rename.
+- **Role Variable Prefix**: Role variables (defaults, vars, `register`) must be prefixed with the role name (e.g. `kafka_pki_dir`) to satisfy ansible-lint `var-naming[no-role-prefix]`.
 - **Idempotency**: All role tasks must be idempotent. Avoid bare `command` or `shell` tasks without `creates`, `removes`, or `changed_when: false`.
 
 ---

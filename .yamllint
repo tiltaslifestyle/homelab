@@ -5,10 +5,17 @@ ignore: |
   **/charts/**/templates/**
   **/vendor/**
   **/generated/**
+  ansible/inventory/group_vars/lab_servers.yml
 
 rules:
   line-length: disable
   comments-indentation: disable
   truthy: disable
   new-lines: disable
-  comments: disable
+  comments:
+    min-spaces-from-content: 1
+  braces:
+    max-spaces-inside: 1
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true

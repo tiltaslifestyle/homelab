@@ -20,7 +20,7 @@ services:
       - "9092:9092"
       - "127.0.0.1:9101:9101" # JMX Metrics port, loopback only
     volumes:
-      - "{{ pki_dir }}:/etc/kafka/secrets"
+      - "{{ kafka_pki_dir }}:/etc/kafka/secrets"
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:SSL,SSL:SSL'
@@ -33,10 +33,10 @@ services:
 
       # SSL / mTLS Configuration
       KAFKA_SSL_KEYSTORE_LOCATION: '/etc/kafka/secrets/kafka1.keystore.jks'
-      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ cert_pass }}'
-      KAFKA_SSL_KEY_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ kafka_cert_pass }}'
+      KAFKA_SSL_KEY_PASSWORD: '{{ kafka_cert_pass }}'
       KAFKA_SSL_TRUSTSTORE_LOCATION: '/etc/kafka/secrets/kafka.truststore.jks'
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ kafka_cert_pass }}'
       KAFKA_SSL_CLIENT_AUTH: 'required'
 
       # JVM Memory Limits
@@ -57,7 +57,7 @@ services:
       - "9094:9092"
       - "127.0.0.1:9102:9101"
     volumes:
-      - "{{ pki_dir }}:/etc/kafka/secrets"
+      - "{{ kafka_pki_dir }}:/etc/kafka/secrets"
     environment:
       KAFKA_NODE_ID: 2
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:SSL,SSL:SSL'
@@ -68,10 +68,10 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_SSL_KEYSTORE_LOCATION: '/etc/kafka/secrets/kafka2.keystore.jks'
-      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ cert_pass }}'
-      KAFKA_SSL_KEY_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ kafka_cert_pass }}'
+      KAFKA_SSL_KEY_PASSWORD: '{{ kafka_cert_pass }}'
       KAFKA_SSL_TRUSTSTORE_LOCATION: '/etc/kafka/secrets/kafka.truststore.jks'
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ kafka_cert_pass }}'
       KAFKA_SSL_CLIENT_AUTH: 'required'
       KAFKA_HEAP_OPTS: "-Xms128m -Xmx256m"
       CLUSTER_ID: '4L62D322T5iT_1B824_QzA'
@@ -88,7 +88,7 @@ services:
       - "9095:9092"
       - "127.0.0.1:9103:9101"
     volumes:
-      - "{{ pki_dir }}:/etc/kafka/secrets"
+      - "{{ kafka_pki_dir }}:/etc/kafka/secrets"
     environment:
       KAFKA_NODE_ID: 3
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:SSL,SSL:SSL'
@@ -99,10 +99,10 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_PROCESS_ROLES: 'broker,controller'
       KAFKA_SSL_KEYSTORE_LOCATION: '/etc/kafka/secrets/kafka3.keystore.jks'
-      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ cert_pass }}'
-      KAFKA_SSL_KEY_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_KEYSTORE_PASSWORD: '{{ kafka_cert_pass }}'
+      KAFKA_SSL_KEY_PASSWORD: '{{ kafka_cert_pass }}'
       KAFKA_SSL_TRUSTSTORE_LOCATION: '/etc/kafka/secrets/kafka.truststore.jks'
-      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ cert_pass }}'
+      KAFKA_SSL_TRUSTSTORE_PASSWORD: '{{ kafka_cert_pass }}'
       KAFKA_SSL_CLIENT_AUTH: 'required'
       KAFKA_HEAP_OPTS: "-Xms128m -Xmx256m"
       CLUSTER_ID: '4L62D322T5iT_1B824_QzA'
