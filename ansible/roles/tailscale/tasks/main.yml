@@ -61,22 +61,39 @@
     interface_in: tailscale0
     comment: 'Tailscale routing'
 
-- name: Get Tailscale status
+- name: Check Tailscale status
   ansible.builtin.command: tailscale status --json
   register: tailscale_status
   changed_when: false
   failed_when: false
+  check_mode: false
 
 - name: Bring Tailscale up
   ansible.builtin.command: >-
     tailscale up
     --authkey={{ tailscale_authkey }}
-    --hostname={{ tailscale_hostname }}
-    --advertise-routes={{ tailscale_advertise_routes }}
-    {{ '--advertise-exit-node' if tailscale_advertise_exit_node else '' }}
-    {{ tailscale_extra_args }}
   when: >-
     tailscale_status.rc != 0
     or (tailscale_status.stdout | from_json).BackendState != 'Running'
   changed_when: true
   no_log: true
+
+- name: Get Tailscale parameters
+  ansible.builtin.command: tailscale get --json
+  register: tailscale_params
+  changed_when: false
+  check_mode: false
+
+- name: Set Tailscale parameters
+  ansible.builtin.command: >-
+    tailscale set
+    --hostname={{ tailscale_hostname }}
+    --advertise-routes={{ tailscale_advertise_routes }}
+    --advertise-exit-node={{ tailscale_advertise_exit_node | bool | lower }}
+  vars:
+    tailscale_prefs: "{{ tailscale_params.stdout | from_json }}"
+  when: >-
+    tailscale_prefs['hostname'] != tailscale_hostname
+    or tailscale_prefs['advertise-routes'] != tailscale_advertise_routes
+    or tailscale_prefs['advertise-exit-node'] != (tailscale_advertise_exit_node | bool)
+  changed_when: true

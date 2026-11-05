@@ -2,4 +2,3 @@
 tailscale_advertise_routes: "192.168.100.0/24"
 tailscale_advertise_exit_node: true
 tailscale_hostname: "{{ inventory_hostname }}"
-tailscale_extra_args: ""
